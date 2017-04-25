@@ -1,0 +1,355 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>p1</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-04-25"><meta name="DC.source" content="p1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">clc;
+clear;
+
+<span class="comment">%load the data file</span>
+load(<span class="string">'pendulum.mat'</span>)
+
+<span class="comment">%problem 1a</span>
+disp(<span class="string">'__________part a_______________'</span>)
+
+
+B_tau_only = [0, 0;
+              0, 0;
+              0, -0.1;
+              0, 1.1];
+
+<span class="comment">%compute controllabiltiy matrix and check rank</span>
+<span class="keyword">if</span> rank(ctrb(A,B_tau_only)) ~= 4
+    disp(<span class="string">'not controllable using only Tau'</span>)
+    controllability_matrix = ctrb(A,B_tau_only)
+<span class="keyword">else</span>
+    ctrb(A,B_tau_only)
+<span class="keyword">end</span>
+
+<span class="comment">%get the e-vals of A</span>
+eigs = eig(A)
+
+<span class="comment">%use PBH test to check if stabilizable</span>
+test_eig1 = rank([A - eigs(1,1)*eye(4) B_tau_only])
+test_eig2 = rank([A - eigs(2,1)*eye(4) B_tau_only])
+test_eig3 = rank([A - eigs(3,1)*eye(4) B_tau_only])
+test_eig4 = rank([A - eigs(4,1)*eye(4) B_tau_only])
+
+<span class="comment">%problem 1b</span>
+disp(<span class="string">'__________part b_______________'</span>)
+
+
+
+C1 = [1, 0, 0, 0];
+C2 = [0, 1, 0, 0];
+
+<span class="comment">%check the controllability of each to see if rank = n = 4</span>
+rank(obsv(A,C1))
+rank(obsv(A,C2))
+
+<span class="comment">%check the detectability for each e-value</span>
+rank([A-eigs(1,1)*eye(4); C2])
+rank([A-eigs(2,1)*eye(4); C2])
+rank([A-eigs(3,1)*eye(4); C2])
+rank([A-eigs(4,1)*eye(4); C2])
+
+<span class="comment">%problem 1c</span>
+B = B(:,1);
+C = [0, 0, 1, 0; 0, 1, 0, 0];
+D = [0;0];
+disp(<span class="string">'__________part c_______________'</span>)
+
+sys = ss(A,B,C,D);
+
+<span class="comment">%check if observable</span>
+<span class="keyword">if</span> rank(obsv(A,C)) ~= 4,
+    disp(<span class="string">'not observable'</span>)
+<span class="keyword">else</span>
+    rank(obsv(A,C))
+<span class="keyword">end</span>
+
+<span class="comment">%not observable, so lets get the transmission zeros</span>
+transmission_zeros = tzero(minreal(sys))
+
+<span class="comment">%see where G(S) looses rank</span>
+syms <span class="string">s</span>
+s = 1;
+G = C*inv(s*eye(4)-A)*B + D;
+
+disp(<span class="string">'__________part d_______________'</span>)
+
+C = eye(4);
+sys = ss(A,B,C,[0; 0; 0; 0]);
+t = 0:0.01:100;
+u = zeros(1,length(t));
+x0 = [0, 0, 0, 0]';
+[Y, T, X] = lsim(sys,u,t,x0);
+
+figure(1)
+subplot(4,1,1)
+plot(T,X(:,1))
+title(<span class="string">'Question 1 Part d: State Values vs Time'</span>)
+ylabel(<span class="string">'P'</span>)
+subplot(4,1,2)
+plot(T,X(:,2))
+ylabel(<span class="string">'theta'</span>)
+subplot(4,1,3)
+plot(T,X(:,3))
+ylabel(<span class="string">'Pdot'</span>)
+subplot(4,1,4)
+plot(T,X(:,4))
+ylabel(<span class="string">'thetadot'</span>)
+xlabel(<span class="string">'time (t)'</span>)
+</pre><pre class="codeoutput">__________part a_______________
+not controllable using only Tau
+
+controllability_matrix =
+
+  Columns 1 through 7
+
+         0         0         0   -0.1000         0    0.1200         0
+         0         0         0    1.1000         0   -0.1310         0
+         0   -0.1000         0    0.1200         0   -1.1251         0
+         0    1.1000         0   -0.1310         0   12.1264         0
+
+  Column 8
+
+   -1.1251
+   12.1264
+    1.4562
+   -2.8874
+
+
+eigs =
+
+         0
+    3.2591
+   -3.3782
+   -0.0908
+
+
+test_eig1 =
+
+     3
+
+
+test_eig2 =
+
+     4
+
+
+test_eig3 =
+
+     4
+
+
+test_eig4 =
+
+     4
+
+__________part b_______________
+
+ans =
+
+     4
+
+
+ans =
+
+     3
+
+
+ans =
+
+     3
+
+
+ans =
+
+     4
+
+
+ans =
+
+     4
+
+
+ans =
+
+     4
+
+__________part c_______________
+not observable
+1 state removed.
+
+transmission_zeros =
+
+  0&times;1 empty double column vector
+
+__________part d_______________
+</pre><img vspace="5" hspace="5" src="p1_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc;
+clear;
+
+%load the data file
+load('pendulum.mat')
+
+%problem 1a
+disp('__________part a_______________')
+
+
+B_tau_only = [0, 0;
+              0, 0;
+              0, -0.1;
+              0, 1.1];
+          
+%compute controllabiltiy matrix and check rank
+if rank(ctrb(A,B_tau_only)) ~= 4
+    disp('not controllable using only Tau')
+    controllability_matrix = ctrb(A,B_tau_only)
+else
+    ctrb(A,B_tau_only)
+end
+
+%get the e-vals of A
+eigs = eig(A)
+
+%use PBH test to check if stabilizable
+test_eig1 = rank([A - eigs(1,1)*eye(4) B_tau_only])
+test_eig2 = rank([A - eigs(2,1)*eye(4) B_tau_only])
+test_eig3 = rank([A - eigs(3,1)*eye(4) B_tau_only])
+test_eig4 = rank([A - eigs(4,1)*eye(4) B_tau_only])
+
+%problem 1b
+disp('__________part b_______________')
+
+
+
+C1 = [1, 0, 0, 0];
+C2 = [0, 1, 0, 0];
+
+%check the controllability of each to see if rank = n = 4
+rank(obsv(A,C1))
+rank(obsv(A,C2))
+
+%check the detectability for each e-value
+rank([A-eigs(1,1)*eye(4); C2])
+rank([A-eigs(2,1)*eye(4); C2])
+rank([A-eigs(3,1)*eye(4); C2])
+rank([A-eigs(4,1)*eye(4); C2])
+
+%problem 1c
+B = B(:,1);
+C = [0, 0, 1, 0; 0, 1, 0, 0];
+D = [0;0];
+disp('__________part c_______________')
+
+sys = ss(A,B,C,D);
+
+%check if observable
+if rank(obsv(A,C)) ~= 4,
+    disp('not observable')
+else
+    rank(obsv(A,C))
+end
+
+%not observable, so lets get the transmission zeros
+transmission_zeros = tzero(minreal(sys))
+
+%see where G(S) looses rank
+syms s
+s = 1;
+G = C*inv(s*eye(4)-A)*B + D;
+
+disp('__________part d_______________')
+
+C = eye(4);
+sys = ss(A,B,C,[0; 0; 0; 0]);
+t = 0:0.01:100;
+u = zeros(1,length(t));
+x0 = [0, 0, 0, 0]';
+[Y, T, X] = lsim(sys,u,t,x0);
+
+figure(1)
+subplot(4,1,1)
+plot(T,X(:,1))
+title('Question 1 Part d: State Values vs Time')
+ylabel('P')
+subplot(4,1,2)
+plot(T,X(:,2))
+ylabel('theta')
+subplot(4,1,3)
+plot(T,X(:,3))
+ylabel('Pdot')
+subplot(4,1,4)
+plot(T,X(:,4))
+ylabel('thetadot')
+xlabel('time (t)')
+
+
+##### SOURCE END #####
+--></body></html>
